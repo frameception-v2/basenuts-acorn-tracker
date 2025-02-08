@@ -22,17 +22,81 @@ import { createStore } from "mipd";
 import { Label } from "~/components/ui/label";
 import { PROJECT_TITLE } from "~/lib/constants";
 
-function ExampleCard() {
+function AcornStats({ fid }: { fid: number }) {
+  const [stats, setStats] = useState({
+    sent: 0,
+    received: 0,
+    failedAttempts: 0,
+    lastUpdated: new Date()
+  });
+  
+  // Simulated API call - replace with real API integration
+  const calculateAcornStats = useCallback(() => {
+    // In real implementation, fetch from API using fid
+    const now = new Date();
+    const timeDiff = now.getTime() - START_DATE.getTime();
+    const daysPassed = Math.floor(timeDiff / (1000 * 3600 * 24));
+    
+    return {
+      sent: Math.floor(Math.random() * 1000) + daysPassed * 10,
+      received: Math.floor(Math.random() * 1500) + daysPassed * 15,
+      failedAttempts: Math.floor(Math.random() * 50) + daysPassed,
+      lastUpdated: now
+    };
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStats(calculateAcornStats());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [calculateAcornStats]);
+
+  const getDailyReset = () => {
+    const now = new Date();
+    const resetTime = new Date(now);
+    resetTime.setUTCHours(11, 0, 0, 0);
+    if (now > resetTime) resetTime.setDate(resetTime.getDate() + 1);
+    return resetTime;
+  };
+
+  const remainingNuts = DAILY_ALLOWANCE - (stats.sent % DAILY_ALLOWANCE);
+  const nextReset = getDailyReset();
+  
   return (
-    <Card>
+    <Card className="bg-gradient-to-br from-amber-700 to-amber-900 text-white">
       <CardHeader>
-        <CardTitle>Welcome to the Frame Template</CardTitle>
-        <CardDescription>
-          This is an example card that you can customize or remove
+        <CardTitle className="flex items-center gap-2">
+          <span className="text-3xl">🥜</span>
+          Acorn Stats
+        </CardTitle>
+        <CardDescription className="text-amber-100">
+          Tracking since Feb 1, 2025
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <Label>Place content in a Card here.</Label>
+      <CardContent className="space-y-3">
+        <div className="grid grid-cols-2 gap-3">
+          <div>
+            <Label className="text-amber-200">Sent</Label>
+            <div className="text-xl font-bold">{stats.sent}</div>
+          </div>
+          <div>
+            <Label className="text-amber-200">Received</Label>
+            <div className="text-xl font-bold">{stats.received}</div>
+          </div>
+          <div>
+            <Label className="text-amber-200">Daily Remaining</Label>
+            <div className="text-xl font-bold">{remainingNuts}</div>
+          </div>
+          <div>
+            <Label className="text-amber-200">Failed Attempts</Label>
+            <div className="text-xl font-bold">{stats.failedAttempts}</div>
+          </div>
+        </div>
+        <div className="text-xs text-amber-300">
+          Next reset: {nextReset.toUTCString().slice(0, -4)}
+        </div>
       </CardContent>
     </Card>
   );
@@ -140,7 +204,23 @@ export default function Frame() {
         <h1 className="text-2xl font-bold text-center mb-4 text-gray-700 dark:text-gray-300">
           {PROJECT_TITLE}
         </h1>
-        <ExampleCard />
+        <AcornStats fid={context?.user?.fid || 0} />
+        <div className="mt-4 flex gap-2 justify-center">
+          <button
+            onClick={() => sdk.actions.openUrl(`${NUTS_API_URL}/share/${context?.user?.fid}`)}
+            className="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <span>🌰</span>
+            Share Stats
+          </button>
+          <button
+            onClick={() => sdk.actions.openUrl(`https://warpcast.com/${context?.user?.username}`)}
+            className="bg-amber-800 hover:bg-amber-900 text-white px-4 py-2 rounded-lg flex items-center gap-2"
+          >
+            <span>📊</span>
+            Profile
+          </button>
+        </div>
       </div>
     </div>
   );
