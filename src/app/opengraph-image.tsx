@@ -19,9 +19,12 @@ Also, Satori does not guarantee that the SVG will 100% match the browser-rendere
 export default async function Image() {
   return new ImageResponse(
     (
-      <div tw="h-full w-full flex flex-col justify-center items-center relative bg-white">
-        <h1 tw="text-6xl text-center">{PROJECT_TITLE}</h1>
-        <h3 tw="text-2xl">{PROJECT_DESCRIPTION}</h3>
+      <div tw="h-full w-full flex flex-col justify-center items-center relative bg-gradient-to-br from-green-600 to-green-800 text-white">
+        <div tw="flex flex-col items-center border-4 border-white/20 rounded-2xl p-12 bg-green-700/30">
+          <h1 tw="text-6xl text-center mb-4 font-bold">{PROJECT_TITLE}</h1>
+          <h3 tw="text-2xl text-center text-green-100 max-w-[80%]">{PROJECT_DESCRIPTION}</h3>
+          <div tw="mt-6 text-5xl">🌰</div>
+        </div>
       </div>
     ),
     {
