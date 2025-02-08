@@ -20,7 +20,7 @@ import { base, optimism } from "wagmi/chains";
 import { useSession } from "next-auth/react";
 import { createStore } from "mipd";
 import { Label } from "~/components/ui/label";
-import { PROJECT_TITLE } from "~/lib/constants";
+import { PROJECT_TITLE, START_DATE, DAILY_ALLOWANCE, NUTS_API_URL } from "~/lib/constants";
 
 function AcornStats({ fid }: { fid: number }) {
   const [stats, setStats] = useState({
